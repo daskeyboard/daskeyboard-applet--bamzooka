@@ -1,6 +1,12 @@
 # Q Applet: Bamzooka!
 
-Displays a color coded notification for Bamzooka assignments on a Das Keyboard Q device.
+## Automate your workflow with reusable checklists
+
+Bamzooka allows you to create checklists, schedule them, assign them to your team, watch progress
+in real-time.
+
+This applet is an extension that displays a color coded notification for Bamzooka assignments on 
+a Das Keyboard Q device.
 
 - Blink <span style="color:red">red</span> for late due assignments
 - <span style="color: orange">orange</span> for due soon assignments

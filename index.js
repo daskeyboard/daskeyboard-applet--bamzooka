@@ -4,6 +4,7 @@ const request = require('request-promise');
 
 // bamzooka base api url
 const apiBaseUrl = `http://localhost:3000/api/v1`;
+const clientBaseUrl = `http://localhost:4200`;
 const logger = q.logger;
 
 class BamzookaAssignment {
@@ -58,9 +59,9 @@ class BamzookaAssignmentsGroup {
     }
     // TODO add url
     const linkParams = {
-      url: `bla`,
-      label: `Show in Bamzooka!`
-    }
+      url: `${clientBaseUrl}/workspaces/${workspaceId}/inbox?is_open=true&sortField=due_at&sortOrder=asc&due_at_nil_order_position=last&page=1&per_page=20`,
+      label: `Open in Bamzooka!`
+    };
     // at least one late blink red
     if (this.lateDue >= 1) {
       return new q.Signal({
@@ -68,7 +69,7 @@ class BamzookaAssignmentsGroup {
           [new q.Point('#FF0000', q.Effects.BLINK)]
         ],
         name: 'Bamzooka!',
-        message: `You have ${this.lateDue} late due ${this.lateDue > 1 ? 'assignment' : 'assignments'}`,
+        message: `You have ${this.lateDue} late due ${this.lateDue > 1 ? 'assignment' : 'assignments'}.`,
         link: linkParams
       });
     }
@@ -79,7 +80,7 @@ class BamzookaAssignmentsGroup {
           [new q.Point('#FFA500', q.Effects.SET_COLOR)]
         ],
         name: 'Bamzooka!',
-        message: `You have ${this.dueSoon} due soon ${this.dueSoon > 1 ? 'assignment' : 'assignments'}`,
+        message: `You have ${this.dueSoon} ${this.dueSoon > 1 ? 'assignment' : 'assignments'} due soon.`,
         link: linkParams
       });
     }
@@ -90,12 +91,31 @@ class BamzookaAssignmentsGroup {
         [new q.Point('#0000FF', q.Effects.SET_COLOR)]
       ],
       name: 'Bamzooka!',
-      message: `You have ${this.total} ${this.total > 1 ? 'assignment' : 'assignments'}`,
+      message: `You have ${this.total} ${this.total > 1 ? 'assignment' : 'assignments'}.`,
       link: linkParams
     });
   }
 
 }
+
+/**
+ * Returns the workspaces I have access too given my API key
+ */
+async function getWorkspacesIHaveAccessTo(apiKey) {
+  const requestOptions = {
+    uri: apiBaseUrl + `/workspaces/all_my_accesses`,
+    headers: {
+      'X-API-KEY': apiKey
+    },
+    json: true
+  };
+
+  return request(requestOptions).then(result => {
+    logger.info(`Bamzooka fetched ${result.length} workspaces`);
+    return result;
+  });
+};
+
 // Main class app that extends the q.DesktopApp from the daskeyboard-applet module
 class QBamzooka extends q.DesktopApp {
   constructor() {
@@ -111,13 +131,13 @@ class QBamzooka extends q.DesktopApp {
     logger.info('QBamzooka running...');
     return this.getAssignments().then(assignmentsGroup => {
       logger.info(`got ${assignmentsGroup.total} assignments from Bamzooka`);
-      const workspaceId = this.config.worksapceId;
+      const workspaceId = this.config.workspaceId;
       return assignmentsGroup.getSignal(workspaceId);
     }).catch(error => {
       const errMessage = `Error when running: ${error}`
       logger.error(errMessage);
       return q.Signal.error([`${errMessage}`]);
-    })
+    });
   }
 
   /**
@@ -143,13 +163,43 @@ class QBamzooka extends q.DesktopApp {
         is_open: true
       },
       json: true
-    }
+    };
 
     return request(requestOptions).then(result => {
       return new BamzookaAssignmentsGroup(result);
-    })
+    });
+  }
+
+  /**
+   * Called from the Das Keyboard Q software to retrieve the options to display for
+   * the user inputs
+   * @param {} fieldId 
+   * @param {*} search 
+   */
+  async options(fieldId, search) {
+    // Looking for options for workspaces
+    if (fieldId === 'workspaceId') {
+      if (this.authorization.apiKey) {
+        return getWorkspacesIHaveAccessTo(this.authorization.apiKey).then(workspaces => {
+          return workspaces.map(workspace => {
+            return {
+              key: workspace.id,
+              value: workspace.name
+            };
+          });
+        }).catch(error => {
+          logger.error(`Error when loading workspaces ${error}`);
+          return [{
+            key: null,
+            value: `Could not get workspaces. Are you sure your API key is valid?`
+          }]
+        });
+      }
+    }
   }
 }
+
+
 
 module.exports = {
   QBamzooka: QBamzooka,
