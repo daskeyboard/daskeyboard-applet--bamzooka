@@ -2,8 +2,8 @@
   "name": "daskeyboard-applet--bamzooka",
   "version": "1.0.0",
   "displayName": "Bamzooka",
-  "description": "Automate your workflow with reusable checklists. Get a notification when you have assignments to complete.",
-  "longDescription": "Get a visual notification on your Das Keyboard Q series when there is new assignments in your Bamzooka workspace.",
+  "description": "Automate workflows with reusable checklists. Get a notification when you have assignments to complete.",
+  "longDescription": "Displays a notification on Das Keyboard Q series when there is new assignments on a Bamzooka workspace.",
   "officialProductName": "Bamzooka",
   "author": "Bamzooka",
   "appUrl": "https://bamzooka.com",
@@ -35,7 +35,7 @@
     },
     "authorization": {
       "type": "apiKey",
-      "hint": "Get your api key from your profile in the Bamzooka application",
+      "hint": "Get the api key from the profile page on the Bamzooka application",
       "supportUrl": "https://app.bamzooka.com/workspaces?openUserProfile=true"
     },
     "questions": [

@@ -1,4 +1,4 @@
-Create checklists, schedule them, assign them to your team, watch progress
+Create checklists, schedule them, assign them to teams, watch progress
 in real-time.
 
 This applet displays a notification for Bamzooka assignments on 

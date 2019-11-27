@@ -130,6 +130,7 @@ class QBamzooka extends q.DesktopApp {
     super();
     // overwrite default polling interval to 10 minutes
     this.pollingInterval = 1000 * 60 * 10; // every 10 minutes
+    this.apiKey = null;
   }
 
   /** 
@@ -179,6 +180,22 @@ class QBamzooka extends q.DesktopApp {
   }
 
   /**
+   * When applying configuration, check if the API key is valid by fetching
+   * the list of workspace.
+   * If error, send it to be displayed for the user
+   */
+  async applyConfig() {
+    if (!this.apiKey && this.authorization.apiKey) {
+      logger.info(`Applying api key configuration`)
+      this.apiKey = this.authorization.apiKey;
+      return getWorkspacesIHaveAccessTo(this.authorization.apiKey).then(() => { })
+        .catch(err => {
+          throw `Could not get workspaces. Are you sure this API key is valid?`
+        });
+    }
+  }
+
+  /**
    * Called from the Das Keyboard Q software to retrieve the options to display for
    * the user inputs
    * @param {} fieldId 
@@ -195,12 +212,6 @@ class QBamzooka extends q.DesktopApp {
               value: workspace.name
             };
           });
-        }).catch(error => {
-          logger.error(`Error when loading workspaces ${error}`);
-          return [{
-            key: null,
-            value: `Could not get workspaces. Are you sure your API key is valid?`
-          }]
         });
       }
     }
