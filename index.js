@@ -3,8 +3,8 @@ const q = require('daskeyboard-applet');
 const request = require('request-promise');
 
 // bamzooka base api url
-const apiBaseUrl = `http://localhost:3000/api/v1`;
-const clientBaseUrl = `http://localhost:4200`;
+const apiBaseUrl = `https://api.bamzooka.com/api/v1`;
+const clientBaseUrl = `https://app.bamzooka.com`;
 const logger = q.logger;
 
 class BamzookaAssignment {
@@ -32,7 +32,7 @@ class BamzookaAssignmentsGroup {
       if (a.due_at) {
         const now = new Date(Date.now());
         const assignmentDueDate = new Date(a.due_at);
-        const dueDateMinus2Days = new Date();
+        const dueDateMinus2Days = new Date(a.due_at);
         dueDateMinus2Days.setDate(assignmentDueDate.getDate() - 2);
         // 2 days before the due date
         if (now.getTime() >= dueDateMinus2Days.getTime() && now.getTime() <= assignmentDueDate.getTime()) {
@@ -53,23 +53,31 @@ class BamzookaAssignmentsGroup {
    * @param {} workspaceId the workspaceId configured by the user
    */
   getSignal(workspaceId) {
-    // If no assignments no signal sent
-    if (this.total === 0) {
-      return null;
-    }
-    // TODO add url
     const linkParams = {
       url: `${clientBaseUrl}/workspaces/${workspaceId}/inbox?is_open=true&sortField=due_at&sortOrder=asc&due_at_nil_order_position=last&page=1&per_page=20`,
       label: `Open in Bamzooka!`
     };
+
+    // If no assignments no signal sent
+    if (this.total === 0) {
+      return new q.Signal({
+        points: [
+          [new q.Point('#00FF00', q.Effects.SET_COLOR)]
+        ],
+        name: 'Bamzooka!',
+        message: `No assignments to complete.`,
+        link: linkParams
+      });
+    }
+
     // at least one late blink red
     if (this.lateDue >= 1) {
       return new q.Signal({
         points: [
-          [new q.Point('#FF0000', q.Effects.BLINK)]
+          [new q.Point('#FF0000', q.Effects.SET_COLOR)]
         ],
         name: 'Bamzooka!',
-        message: `You have ${this.lateDue} late due ${this.lateDue > 1 ? 'assignment' : 'assignments'}.`,
+        message: `Late: ${this.lateDue} ${this.lateDue > 1 ? 'assignments' : 'assignment'}.`,
         link: linkParams
       });
     }
@@ -80,7 +88,7 @@ class BamzookaAssignmentsGroup {
           [new q.Point('#FFA500', q.Effects.SET_COLOR)]
         ],
         name: 'Bamzooka!',
-        message: `You have ${this.dueSoon} ${this.dueSoon > 1 ? 'assignment' : 'assignments'} due soon.`,
+        message: `Due soon: ${this.dueSoon} ${this.dueSoon > 1 ? 'assignments' : 'assignment'}.`,
         link: linkParams
       });
     }
@@ -88,10 +96,10 @@ class BamzookaAssignmentsGroup {
     // Assignments but nothing urgent -> return blue set color
     return new q.Signal({
       points: [
-        [new q.Point('#0000FF', q.Effects.SET_COLOR)]
+        [new q.Point('#1DCAFF', q.Effects.SET_COLOR)]
       ],
       name: 'Bamzooka!',
-      message: `You have ${this.total} ${this.total > 1 ? 'assignment' : 'assignments'}.`,
+      message: `Due later: ${this.total} ${this.total > 1 ? 'assignments' : 'assignment'}.`,
       link: linkParams
     });
   }

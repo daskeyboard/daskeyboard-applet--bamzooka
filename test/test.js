@@ -65,7 +65,7 @@ describe('BamzookaAssignmentsGroup', () => {
 });
 
 describe('QBamzooka', async () => {
-  it('should get a blink red if there is an assignment due late', async function () {
+  it('should get a set color red if there is an assignment due late', async function () {
     fakeResponse = [
       { due_at: getLateDate().toISOString() }
     ];
@@ -73,7 +73,7 @@ describe('QBamzooka', async () => {
     return app.run().then(signal => {
       assert.ok(signal);
       assert.equal('#FF0000', signal.points[0][0].color);
-      assert.equal(daskeyboardApplet.Effects.BLINK, signal.points[0][0].effect);
+      assert.equal(daskeyboardApplet.Effects.SET_COLOR, signal.points[0][0].effect);
     }).catch(err => {
       assert.fail(err);
     });
@@ -100,7 +100,7 @@ describe('QBamzooka', async () => {
     const app = buildAppWithFakeResponse();
     return app.run().then(signal => {
       assert.ok(signal);
-      assert.equal(signal.points[0][0].color, '#0000FF');
+      assert.equal(signal.points[0][0].color, '#1DCAFF');
       assert.equal(daskeyboardApplet.Effects.SET_COLOR, signal.points[0][0].effect);
     }).catch(err => {
       assert.fail(err);
@@ -111,7 +111,9 @@ describe('QBamzooka', async () => {
     fakeResponse = [];
     const app = buildAppWithFakeResponse();
     return app.run().then(signal => {
-      assert.equal(signal, null);
+      assert.ok(signal);
+      assert.equal(signal.points[0][0].color, '#00FF00');
+      assert.equal(daskeyboardApplet.Effects.SET_COLOR, signal.points[0][0].effect);
     }).catch(err => {
       assert.fail(err);
     });
