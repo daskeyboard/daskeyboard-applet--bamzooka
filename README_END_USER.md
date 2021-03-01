@@ -4,7 +4,7 @@ in real-time.
 This applet displays a notification for Bamzooka assignments on 
 a Das Keyboard Q device.
 
-- <span style="color:red">red</span> assigment due date is late
+- <span style="color:red">red</span> assignment due date is late
 - <span style="color: orange">orange</span> assignment is due soon
 - <span style="color: #1DCAFF">blue</span> assignment is due later
 - <span style="color: green">green</span> no assignments to complete
