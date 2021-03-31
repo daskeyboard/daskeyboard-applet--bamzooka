@@ -1,6 +1,10 @@
-#### 1.0.0 (2019-11-27)
+# Changelog Q Applet Bamzooka
 
-##### New Features
+## Version 1.0.1 - April 7th, 2027
 
-*  First working release (612ee1c9)
+* Fix typo
+* Bump y18n to 4.0.1
 
+## Version 1.0.0 - November 27th, 2019
+
+* First release

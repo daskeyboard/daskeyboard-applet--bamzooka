@@ -1,6 +1,6 @@
 {
   "name": "daskeyboard-applet--bamzooka",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Bamzooka",
   "description": "Automate workflows with reusable checklists. Get a notification when you have assignments to complete.",
   "longDescription": "Displays a notification on Das Keyboard Q series when there is new assignments on a Bamzooka workspace.",
@@ -56,6 +56,6 @@
     "request-promise": "^4.2.5"
   },
   "devDependencies": {
-    "mocha": "^6.2.2"
+    "mocha": "^8.3.2"
   }
 }
